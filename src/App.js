@@ -1,12 +1,27 @@
-import './App.css';
+import React from 'react'
 
-const MoneyBook = () => {
-  return (
-    <div>
-      <h1>小遣い帳</h1>
-    </div>
-  )
+class Main extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      items: ['Apple', 'Orenge', 'Pear']
+    }
+  }
+  render () {
+    return (
+      <>
+        <ListView items={this.state.items} />
+      </>
+    )
+  }
 }
+const ListView = props => (
+  <ul>
+    props.items.map(item => <Item item={item} />
+    )}
+  </ul>
+)
 
+const Item = props => <li>{props.item}</li>
 
-export default MoneyBook;
+export default Main

@@ -1,75 +1,38 @@
-import React from 'react'
-import axios from 'axios'
-import './App.css'
+import { useState } from 'react'
+import Header from './components/Header'
+import MainContent from './components/MainContent'
 
-const API_ENDPOINT = 'http://api.openweathermap.org/data/2.5/forecast'
+function App () {
+  const [animeList, SetAnimeList] = useState([])
+  const [search, SetSearch] = useState('')
 
-export default class extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      apiKey: 'bfa294572295d97adca32fc157ad8185',
-      requestCity: '',
-      city: '',
-      response: []
-    }
-    this.handleInput = this.handleInput.bind(this)
-    this.handleGetWeather = this.handleGetWeather.bind(this)
+  const HandleSearch = e => {
+    e.preventDefault()
+
+    FetchAnime(search)
   }
 
-  handleGetWeather () {
-    axios
-      .get(API_ENDPOINT, {
-        params: {
-          q: this.state.requestCity,
-          APPID: this.state.apiKey
-        }
-      })
-      .then(res => {
-        this.setState({
-          response: res.data.list,
-          city: res.data.city.name
-        })
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+  const FetchAnime = async query => {
+    const temp = await fetch(
+      `https://api.jikan.moe/v3/search/anime?q=${query}&order_by=title&sort=asc&limit=10`
+    ).then(res => res.json())
+
+    SetAnimeList(temp.results)
   }
 
-  handleInput ({ target: { value } }) {
-    this.setState({
-      requestCity: value
-    })
-  }
-
-  render () {
-    console.log(this.state.response)
-
-    return (
-      <div className='weather'>
-        <h1>天気</h1>
-        <input
-          type='text'
-          value={this.state.requestCity}
-          onChange={this.handleInput}
+  return (
+    <div>
+      <Header />
+      <div>
+        <MainContent
+          HandleSearch={HandleSearch}
+          search={search}
+          SetSearch={SetSearch}
+          animeList={animeList}
         />
-        <button onClick={this.handleGetWeather}>Search</button>
-        <p> Location: {this.state.city} </p>
-        {Object.keys(this.state.response).map(key => (
-          <li key={key}>
-            {this.state.response[key].dt_txt}
-            ,
-            <img
-              src={
-                'http://openweathermap.org/img/w/' +
-                this.state.response[key].weather[0].icon +
-                '.png'
-              }
-            />
-            {this.state.response[key].weather[0].main}
-          </li>
-        ))}
       </div>
-    )
-  }
+    </div>
+  )
 }
+
+export default App
